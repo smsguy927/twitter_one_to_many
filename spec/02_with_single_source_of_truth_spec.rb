@@ -109,8 +109,4 @@ RSpec.describe "User has many tweets" do
       expect(tweet).to be_a(SSoT::Tweet)
     end
   end
-
-  
-
-  
 end

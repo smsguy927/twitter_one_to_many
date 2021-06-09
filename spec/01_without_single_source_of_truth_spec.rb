@@ -15,12 +15,12 @@ RSpec.describe "User" do
       expect{ User.new("Dakota") }.not_to raise_error
     end
 
-    it "assigns the username argument as the value of the @username" do 
+    it "assigns the username argument as the value of the @username instance variable" do 
       user = User.new("Jose")
       expect(user.instance_variable_get("@username")).to eq("Jose")
     end
 
-    it "creates a @tweets attribute the will contain an array of tweets" do 
+    it "creates a @tweets attribute that will contain an array of tweets" do 
       user = User.new("Rumiko")
       expect(user.instance_variable_get("@tweets")).to be_an(Array)
       expect(user.instance_variable_get("@tweets").length).to eq(0)
@@ -34,23 +34,7 @@ RSpec.describe "User" do
     end
   end
 
-  describe "#post_tweet(message)" do 
-    it "creates a tweet instance, associates it with the user and returns it" do 
-      user = User.new("Katelyn")
-      tweet = user.post_tweet("Ruby is awesome!!!")
-      expect(user.tweets.length).to eq(1)
-      expect(user.tweets.first).to be_a(Tweet)
-      expect(user.tweets.first.message).to eq("Ruby is awesome!!!")
-      expect(tweet).to be_a(Tweet)
-    end
-  end
 
-  describe "#tweets" do 
-    it "returns an array of tweets belonging to the user" do 
-      user = User.new("Adam") 
-      expect(user.tweets).to eq(user.instance_variable_get("@tweets"))
-    end
-  end
 end
 
 RSpec.describe "Tweet" do 
@@ -60,7 +44,7 @@ RSpec.describe "Tweet" do
       expect{ Tweet.new("A burrito sounds really good right about now. #hungry", user) }.not_to raise_error
     end
 
-    it "assigns the message argument as the value of the @message" do 
+    it "assigns the message argument as the value of the @message instance variable" do 
       user = User.new("Jose")
       tweet = Tweet.new("This new computer is awesome!!!", user)
       expect(tweet.instance_variable_get("@message")).to eq("This new computer is awesome!!!")
@@ -102,6 +86,47 @@ RSpec.describe "Tweet" do
       user = User.new("Angela")
       tweet = Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
       expect(tweet.message).to eq("When you make it to the burrito place right before it closes #relieved")
+    end
+  end
+end
+
+RSpec.describe "One to Many Relationship" do 
+  describe "User#tweets" do 
+    it "returns an array of tweets belonging to the user" do 
+      user = User.new("Adam") 
+      expect(user.tweets).to eq(user.instance_variable_get("@tweets"))
+    end
+  end
+
+  describe "User#post_tweet(message)" do 
+    it "creates a tweet instance, associates it with the user and returns it" do 
+      user = User.new("Katelyn")
+      tweet = user.post_tweet("Ruby is awesome!!!")
+      expect(user.tweets.length).to eq(1)
+      expect(user.tweets.first).to be_a(Tweet)
+      expect(user.tweets.first.message).to eq("Ruby is awesome!!!")
+      expect(tweet).to be_a(Tweet)
+    end
+  end
+end
+
+RSpec.describe "Challenges when we don't have a Single Source of Truth" do
+  describe "Tweet#initialize" do
+    it "must add the tweet to the user's array of tweets as well as Tweet.all" do 
+      Tweet.class_variable_set("@@all", [])
+      user = User.new("Angela")
+      tweet = Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
+      expect(user.tweets).to include(tweet)
+    end
+  end
+  describe "Tweet#delete" do 
+    it "must delete a tweet both from the user's collection of tweets and from Tweet.all" do  
+      Tweet.class_variable_set("@@all", [])
+      user = User.new("Angela")
+      tweet = Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
+      tweet.delete
+      expect(Tweet.all).not_to include(tweet)
+      expect(user.tweets).not_to include(tweet)
     end
   end
 end
