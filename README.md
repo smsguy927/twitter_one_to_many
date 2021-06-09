@@ -20,3 +20,23 @@
   * `Tweet#user` that returns an instance of the user class
   * `Tweet.all` that returns all the Tweets created.
   * `Tweet#username` that returns the username of the tweet's user
+
+## Notes
+
+How do we add getter methods for attributes? Which attribute macro do we use to generate a getter method?
+
+```rb
+attr_reader :username
+```
+
+If you want a setter:
+
+```rb
+attr_writer :username
+```
+
+If you want both getter and setter:
+
+```rb
+attr_accessor :username
+```

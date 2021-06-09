@@ -22,8 +22,9 @@ RSpec.describe "User" do
 
     it "creates a @tweets attribute that will contain an array of tweets" do 
       user = User.new("Rumiko")
-      expect(user.instance_variable_get("@tweets")).to be_an(Array)
-      expect(user.instance_variable_get("@tweets").length).to eq(0)
+      # expect(user.instance_variable_get("@tweets")).to be_an(Array)
+      # expect(user.instance_variable_get("@tweets").length).to eq(0)
+      expect(user.instance_variable_get("@tweets")).to eq([])
     end
   end
 
@@ -44,7 +45,7 @@ RSpec.describe "Tweet" do
       expect{ Tweet.new("A burrito sounds really good right about now. #hungry", user) }.not_to raise_error
     end
 
-    it "assigns the message argument as the value of the @message instance variable" do 
+    it "assigns the @message instance variable to the value passed in as the message argument" do 
       user = User.new("Jose")
       tweet = Tweet.new("This new computer is awesome!!!", user)
       expect(tweet.instance_variable_get("@message")).to eq("This new computer is awesome!!!")
