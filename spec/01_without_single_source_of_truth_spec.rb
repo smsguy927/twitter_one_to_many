@@ -112,7 +112,6 @@ RSpec.describe "deleting a Tweet" do #
     user = User.new("Angela")
     tweet = Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
     tweet.delete
-    binding.pry
     expect(Tweet.all).not_to include(tweet)
     expect(user.tweets).not_to include(tweet)
   end
