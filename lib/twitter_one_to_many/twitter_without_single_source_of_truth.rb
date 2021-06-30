@@ -1,12 +1,12 @@
 class User 
   attr_reader :username, :tweets
-  def initialize(username)
-    @username = username
+  def initialize(attributes = {})
+    @username = attributes[:username]
     @tweets = []
   end
 
   def post_tweet(message)
-    Tweet.new(message, self)
+    Tweet.new(message: message, user: self)
   end
 end
 
@@ -18,9 +18,9 @@ class Tweet
   end
 
   attr_reader :message, :user
-  def initialize(message, user)
-    @message = message
-    @user = user
+  def initialize(attributes = {})
+    @message = attributes[:message]
+    @user = attributes[:user]
     @user.tweets << self
     @@all << self
   end

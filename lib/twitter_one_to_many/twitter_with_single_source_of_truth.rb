@@ -3,12 +3,12 @@ module SSoT
  
   class User 
     attr_reader :username
-    def initialize(username)
-      @username = username
+    def initialize(attributes)
+      @username = attributes[:username]
     end
 
     def post_tweet(message)
-      Tweet.new(message, self)
+      Tweet.new(message: message, user: self)
     end
 
     def tweets
@@ -24,9 +24,9 @@ module SSoT
     end
 
     attr_reader :message, :user
-    def initialize(message, user)
-      @message = message
-      @user = user
+    def initialize(attributes)
+      @message = attributes[:message]
+      @user = attributes[:user]
       @@all << self
     end
 

@@ -12,101 +12,101 @@
 
 require "twitter_one_to_many/twitter_with_single_source_of_truth"
 
-RSpec.describe "User" do 
-  describe "#initialize" do
-    it "takes a username as an argument" do 
-      expect{ SSoT::User.new("Dakota") }.not_to raise_error
+RSpec.describe "Single Source of Truth" do 
+  describe "User" do 
+    describe "#initialize" do
+      it "takes a hash of attributes including a username as an argument" do 
+        expect{ SSoT::User.new(username: "Dakota") }.not_to raise_error
+      end
+
+      it "assigns the value of username within the hash as the value of the @username instance variable" do 
+        user = SSoT::User.new(username: "Jose")
+        expect(user.instance_variable_get("@username")).to eq("Jose")
+      end
+
     end
 
-    it "assigns the username argument as the value of the @username" do 
-      user = SSoT::User.new("Jose")
-      expect(user.instance_variable_get("@username")).to eq("Jose")
-    end
-
-  end
-
-  describe "#username" do
-    it "returns the value of the username attribute" do 
-      user = SSoT::User.new("Angela")
-      expect(user.username).to eq("Angela")
-    end
-  end
-
-  
-end
-
-RSpec.describe "Tweet" do 
-  describe "#initialize" do
-    it "takes a message and a user as arguments" do 
-      user = SSoT::User.new("Dakota")
-      expect{ SSoT::Tweet.new("A burrito sounds really good right about now. #hungry", user) }.not_to raise_error
-    end
-
-    it "assigns the message argument as the value of the @message" do 
-      user = SSoT::User.new("Jose")
-      tweet = SSoT::Tweet.new("This new computer is awesome!!!", user)
-      expect(tweet.instance_variable_get("@message")).to eq("This new computer is awesome!!!")
-    end
-
-    it "creates a @user attribute that will store the user who made the tweet" do 
-      user = SSoT::User.new("Joshua")
-      tweet = SSoT::Tweet.new("Chia seeds, Almond milk and Honey in a mason jar overnight = happiness", user)
-      expect(tweet.instance_variable_get("@user")).to eq(user)
-    end
-
-    it "adds new tweets to a class variable called @@all" do 
-      user = SSoT::User.new("Sandra")
-      tweet = SSoT::Tweet.new("Lennon has a mouth full of the rug again #everythingisfood", user)
-      expect(SSoT::Tweet.class_variable_get("@@all")).to include(tweet)
+    describe "#username" do
+      it "returns the value of the username attribute" do 
+        user = SSoT::User.new(username: "Angela")
+        expect(user.username).to eq("Angela")
+      end
     end
   end
 
-  describe ".all" do 
-    it "returns an array of all tweets created" do 
-      user = SSoT::User.new("Dakota")
-      tweet_1 = SSoT::Tweet.new("When you're so tired you learn to lucid dream that you're stilling doing your homework #timetofly", user)
-      tweet_2 = SSoT::Tweet.new("If I only had to eat spinach curry for the rest of my life, I think that'd just be ok", user)
-      expect(SSoT::Tweet.all).to include(tweet_1)
-      expect(SSoT::Tweet.all).to include(tweet_2)
+  describe "Tweet" do 
+    describe "#initialize" do
+      it "takes a hash of attributes including a message and a user as an argument" do 
+        user = SSoT::User.new(username: "Dakota")
+        expect{ SSoT::Tweet.new(message: "A burrito sounds really good right about now. #hungry", user: user) }.not_to raise_error
+      end
+
+      it "assigns the value of message in the attributes hash as the value of the @message instance variable" do 
+        user = SSoT::User.new(username: "Jose")
+        tweet = SSoT::Tweet.new(message: "This new computer is awesome!!!", user: user)
+        expect(tweet.instance_variable_get("@message")).to eq("This new computer is awesome!!!")
+      end
+
+      it "assigns the value of the user in the attributes hash as the value of the @user instance variable (this represents the user that created the tweet)" do 
+        user = SSoT::User.new(username: "Joshua")
+        tweet = SSoT::Tweet.new(message: "Chia seeds, Almond milk and Honey in a mason jar overnight = happiness", user: user)
+        expect(tweet.instance_variable_get("@user")).to eq(user)
+      end
+
+      it "adds new tweets to a class variable called @@all" do 
+        user = SSoT::User.new(username: "Sandra")
+        tweet = SSoT::Tweet.new(message: "Lennon has a mouth full of the rug again #everythingisfood", user: user)
+        expect(SSoT::Tweet.class_variable_get("@@all")).to include(tweet)
+      end
+    end
+
+    describe ".all" do 
+      it "returns an array of all tweets created" do 
+        user = SSoT::User.new(username: "Dakota")
+        tweet_1 = SSoT::Tweet.new(message: "When you're so tired you learn to lucid dream that you're stilling doing your homework #timetofly", user: user)
+        tweet_2 = SSoT::Tweet.new(message: "If I only had to eat spinach curry for the rest of my life, I think that'd just be ok", user: user)
+        expect(SSoT::Tweet.all).to include(tweet_1)
+        expect(SSoT::Tweet.all).to include(tweet_2)
+      end
+    end
+
+
+    describe "#message" do
+      it "returns the value of the tweet's message attribute" do 
+        user = SSoT::User.new(username: "Angela")
+        tweet = SSoT::Tweet.new(message: "When you make it to the burrito place right before it closes #relieved", user: user)
+        expect(tweet.message).to eq("When you make it to the burrito place right before it closes #relieved")
+      end
+    end
+
+    describe "#username" do
+      it "returns the username of the user who made the tweet" do 
+        user = SSoT::User.new(username: "Angela")
+        tweet = SSoT::Tweet.new(message: "When you make it to the burrito place right before it closes #relieved", user: user)
+        expect(tweet.username).to eq("Angela")
+      end
     end
   end
 
-
-  describe "#message" do
-    it "returns the value of the tweet's message attribute" do 
-      user = SSoT::User.new("Angela")
-      tweet = SSoT::Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
-      expect(tweet.message).to eq("When you make it to the burrito place right before it closes #relieved")
+  describe "User has many tweets" do
+    describe "#tweets" do 
+      it "returns an array of tweets belonging to the user" do 
+        user = SSoT::User.new(username: "Adam") 
+        tweet = SSoT::Tweet.new(message: "I'm so glad this project is done! #proud", user: user)
+        expect(user.tweets).to include(tweet)
+        expect(user.instance_variable_get("@tweets")).to eq(nil)
+      end
     end
-  end
-
-  describe "#username" do
-    it "returns the username of the user who made the tweet" do 
-      user = SSoT::User.new("Angela")
-      tweet = SSoT::Tweet.new("When you make it to the burrito place right before it closes #relieved", user)
-      expect(tweet.username).to eq("Angela")
-    end
-  end
-end
-
-RSpec.describe "User has many tweets" do
-  describe "#tweets" do 
-    it "returns an array of tweets belonging to the user" do 
-      user = SSoT::User.new("Adam") 
-      tweet = SSoT::Tweet.new("I'm so glad this project is done! #proud", user)
-      expect(user.tweets).to include(tweet)
-      expect(user.instance_variable_get("@tweets")).to eq(nil)
-    end
-  end
-  
-  describe "User#post_tweet(message)" do 
-    it "creates a tweet instance, associates it with the user and returns it" do 
-      user = SSoT::User.new("Katelyn")
-      tweet = user.post_tweet("Ruby is awesome!!!")
-      expect(user.tweets.length).to eq(1)
-      expect(user.tweets.first).to be_a(SSoT::Tweet)
-      expect(user.tweets.first.message).to eq("Ruby is awesome!!!")
-      expect(tweet).to be_a(SSoT::Tweet)
+    
+    describe "User#post_tweet(message)" do 
+      it "creates a tweet instance, associates it with the user and returns it" do 
+        user = SSoT::User.new(username: "Katelyn")
+        tweet = user.post_tweet("Ruby is awesome!!!")
+        expect(user.tweets.length).to eq(1)
+        expect(user.tweets.first).to be_a(SSoT::Tweet)
+        expect(user.tweets.first.message).to eq("Ruby is awesome!!!")
+        expect(tweet).to be_a(SSoT::Tweet)
+      end
     end
   end
 end
